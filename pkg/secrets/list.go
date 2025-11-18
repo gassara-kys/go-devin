@@ -14,9 +14,9 @@ type ListResponse struct {
 
 // List retrieves all secrets.
 func (s *Service) List(ctx context.Context) (*ListResponse, error) {
-	var resp ListResponse
-	if err := s.doJSON(ctx, http.MethodGet, "/secrets", nil, nil, &resp); err != nil {
+	var records []types.Secret
+	if err := s.doJSON(ctx, http.MethodGet, "/secrets", nil, nil, &records); err != nil {
 		return nil, err
 	}
-	return &resp, nil
+	return &ListResponse{Secrets: records}, nil
 }

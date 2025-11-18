@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"log"
 	"os"
 	"time"
@@ -29,5 +29,9 @@ func main() {
 		log.Fatalf("list secrets: %v", err)
 	}
 
-	fmt.Printf("%+v\n", *resp)
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	if err := enc.Encode(resp); err != nil {
+		log.Fatalf("encode json: %v", err)
+	}
 }
