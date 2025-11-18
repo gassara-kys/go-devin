@@ -7,11 +7,13 @@ import (
 	"github.com/gassara-kys/go-devin/internal/httpclient"
 )
 
+// Service exposes knowledge-related API operations.
 type Service struct {
 	transport httpclient.Transport
 	validator func(any) error
 }
 
+// NewService builds a knowledge Service with the provided transport and validator.
 func NewService(t httpclient.Transport, validate func(any) error) *Service {
 	if t == nil {
 		panic("knowledge: transport is required")

@@ -11,6 +11,7 @@ import (
 	"github.com/gassara-kys/go-devin/internal/testtransport"
 )
 
+// NewExecutor builds an httpclient.Transport backed by the provided RoundTripFunc.
 func NewExecutor(t *testing.T, fn testtransport.RoundTripFunc) httpclient.Transport {
 	t.Helper()
 	cfg := httpclient.Config{

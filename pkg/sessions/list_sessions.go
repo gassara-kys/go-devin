@@ -10,16 +10,19 @@ import (
 	"github.com/gassara-kys/go-devin/pkg/types"
 )
 
+// ListSessionsRequest contains filters for listing sessions.
 type ListSessionsRequest struct {
 	Limit  int      `url:"limit,omitempty" binding:"omitempty,min=1,max=1000"`
 	Offset int      `url:"offset,omitempty" binding:"omitempty,min=0"`
 	Tags   []string `url:"tags,omitempty" binding:"omitempty,dive,required"`
 }
 
+// ListSessionsResponse contains the paginated sessions list.
 type ListSessionsResponse struct {
 	Sessions []types.Session `json:"sessions"`
 }
 
+// List retrieves sessions optionally filtered by tags.
 func (s *Service) List(ctx context.Context, req *ListSessionsRequest) (*ListSessionsResponse, error) {
 	var (
 		q   url.Values

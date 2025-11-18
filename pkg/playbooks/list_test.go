@@ -29,7 +29,7 @@ func TestList(t *testing.T) {
 			},
 			responder: func(data []types.Playbook) func(*http.Request) *http.Response {
 				payload, _ := json.Marshal(data)
-				return func(r *http.Request) *http.Response {
+				return func(*http.Request) *http.Response {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(string(payload))),

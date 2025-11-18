@@ -7,6 +7,7 @@ import (
 	"net/url"
 )
 
+// Delete removes a knowledge entry by ID.
 func (s *Service) Delete(ctx context.Context, noteID string) error {
 	if noteID == "" {
 		return fmt.Errorf("noteID is required")

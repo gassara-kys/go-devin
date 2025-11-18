@@ -25,9 +25,13 @@ const (
 	defaultRetryMaxWait  = 2 * time.Second
 )
 
+// HTTPDoer mirrors httpclient.Doer so callers can provide custom clients.
 type HTTPDoer = httpclient.Doer
+
+// RetryConfig mirrors httpclient.RetryConfig for SDK options.
 type RetryConfig = httpclient.RetryConfig
 
+// Client wraps access to all Devin services.
 type Client struct {
 	cfg       httpclient.Config
 	transport httpclient.Transport
@@ -41,8 +45,10 @@ type Client struct {
 	Playbooks *playbooks.Service
 }
 
+// Option configures a Client during construction.
 type Option func(*Client)
 
+// NewClient builds a Client using the provided API key and options.
 func NewClient(apiKey string, opts ...Option) (*Client, error) {
 	if apiKey == "" {
 		return nil, errors.New("api key is required")
@@ -97,6 +103,7 @@ func NewClient(apiKey string, opts ...Option) (*Client, error) {
 	return c, nil
 }
 
+// WithBaseURL overrides the default API base URL.
 func WithBaseURL(baseURL string) Option {
 	return func(c *Client) {
 		if baseURL != "" {
@@ -105,6 +112,7 @@ func WithBaseURL(baseURL string) Option {
 	}
 }
 
+// WithHTTPClient injects a custom HTTP client implementation.
 func WithHTTPClient(h HTTPDoer) Option {
 	return func(c *Client) {
 		if h != nil {
@@ -113,6 +121,7 @@ func WithHTTPClient(h HTTPDoer) Option {
 	}
 }
 
+// WithTimeout overrides the timeout on the underlying *http.Client.
 func WithTimeout(timeout time.Duration) Option {
 	return func(c *Client) {
 		if httpClient, ok := c.cfg.HTTPClient.(*http.Client); ok && timeout > 0 {
@@ -121,6 +130,7 @@ func WithTimeout(timeout time.Duration) Option {
 	}
 }
 
+// WithRetry customizes the retry behavior when calling Devin.
 func WithRetry(cfg RetryConfig) Option {
 	return func(c *Client) {
 		if cfg.MaxAttempts > 0 {
@@ -135,6 +145,7 @@ func WithRetry(cfg RetryConfig) Option {
 	}
 }
 
+// WithLogger replaces the default slog.Logger.
 func WithLogger(logger *slog.Logger) Option {
 	return func(c *Client) {
 		if logger != nil {
@@ -144,6 +155,7 @@ func WithLogger(logger *slog.Logger) Option {
 	}
 }
 
+// WithUserAgent overrides the default User-Agent header value.
 func WithUserAgent(ua string) Option {
 	return func(c *Client) {
 		if ua != "" {

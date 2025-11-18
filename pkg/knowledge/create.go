@@ -7,6 +7,7 @@ import (
 	"github.com/gassara-kys/go-devin/pkg/types"
 )
 
+// CreateRequest represents the payload for creating a knowledge entry.
 type CreateRequest struct {
 	Name               string `json:"name" binding:"required"`
 	Body               string `json:"body" binding:"required"`
@@ -15,10 +16,12 @@ type CreateRequest struct {
 	PinnedRepo         string `json:"pinned_repo,omitempty"`
 }
 
+// CreateResponse contains the created knowledge entry.
 type CreateResponse struct {
 	types.Knowledge
 }
 
+// Create adds a new knowledge entry.
 func (s *Service) Create(ctx context.Context, req CreateRequest) (*CreateResponse, error) {
 	if err := s.validateStruct(req); err != nil {
 		return nil, err

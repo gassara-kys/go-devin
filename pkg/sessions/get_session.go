@@ -9,6 +9,7 @@ import (
 	"github.com/gassara-kys/go-devin/pkg/types"
 )
 
+// Get retrieves a session by ID, including optional message history.
 func (s *Service) Get(ctx context.Context, sessionID string) (*types.SessionDetail, error) {
 	if sessionID == "" {
 		return nil, fmt.Errorf("sessionID is required")

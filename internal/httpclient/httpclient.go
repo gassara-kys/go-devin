@@ -15,16 +15,19 @@ import (
 	"time"
 )
 
+// Doer represents the minimal interface required from *http.Client.
 type Doer interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
+// RetryConfig tunes the exponential backoff retry behavior.
 type RetryConfig struct {
 	MaxAttempts    int
 	InitialBackoff time.Duration
 	MaxBackoff     time.Duration
 }
 
+// Config contains the information required to issue API calls.
 type Config struct {
 	BaseURL    string
 	APIKey     string
@@ -34,19 +37,23 @@ type Config struct {
 	Retry      RetryConfig
 }
 
+// Transport defines the public surface that higher level services consume.
 type Transport interface {
 	DoJSON(ctx context.Context, method, path string, query url.Values, payload any, out any) error
 	DoBytes(ctx context.Context, method, path string, query url.Values, body []byte, contentType, accept string) ([]byte, error)
 }
 
+// Executor implements Transport on top of the configured HTTP client.
 type Executor struct {
 	cfg *Config
 }
 
+// NewExecutor builds an Executor using the provided Config.
 func NewExecutor(cfg *Config) *Executor {
 	return &Executor{cfg: cfg}
 }
 
+// DoJSON sends an HTTP request with optional JSON payload and decodes the JSON response.
 func (e *Executor) DoJSON(ctx context.Context, method, p string, query url.Values, payload any, out any) error {
 	var body []byte
 	var err error
@@ -75,7 +82,9 @@ func (e *Executor) DoJSON(ctx context.Context, method, p string, query url.Value
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if out == nil || resp.StatusCode == http.StatusNoContent {
 		_, err = io.Copy(io.Discard, resp.Body)
@@ -89,6 +98,7 @@ func (e *Executor) DoJSON(ctx context.Context, method, p string, query url.Value
 	return nil
 }
 
+// DoBytes sends an HTTP request with raw bytes and returns the raw response body.
 func (e *Executor) DoBytes(ctx context.Context, method, p string, query url.Values, body []byte, contentType, accept string) ([]byte, error) {
 	resp, err := e.doWithRetry(ctx, func() (*http.Request, error) {
 		var reader io.Reader
@@ -110,7 +120,9 @@ func (e *Executor) DoBytes(ctx context.Context, method, p string, query url.Valu
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	return io.ReadAll(resp.Body)
 }
@@ -196,9 +208,12 @@ func (e *Executor) doWithRetry(ctx context.Context, builder requestBuilder) (*ht
 		}
 
 		body, readErr := io.ReadAll(resp.Body)
-		resp.Body.Close()
+		closeErr := resp.Body.Close()
 		if readErr != nil {
 			return nil, readErr
+		}
+		if closeErr != nil {
+			return nil, closeErr
 		}
 
 		apiErr := &APIError{
@@ -254,20 +269,18 @@ func shouldRetryError(err error) bool {
 		return false
 	}
 	var netErr net.Error
-	if errors.As(err, &netErr) {
-		return true
-	}
-	return false
+	return errors.As(err, &netErr)
 }
 
-func nextDuration(current, max time.Duration) time.Duration {
+func nextDuration(current, maxDuration time.Duration) time.Duration {
 	next := current * 2
-	if next > max {
-		return max
+	if next > maxDuration {
+		return maxDuration
 	}
 	return next
 }
 
+// APIError represents an error returned by the Devin API.
 type APIError struct {
 	StatusCode int
 	Detail     string

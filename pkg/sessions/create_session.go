@@ -7,6 +7,7 @@ import (
 	"github.com/gassara-kys/go-devin/pkg/types"
 )
 
+// CreateSessionRequest describes the payload used to start a session.
 type CreateSessionRequest struct {
 	Prompt       string   `json:"prompt" binding:"required"`
 	SnapshotID   string   `json:"snapshot_id,omitempty"`
@@ -16,10 +17,12 @@ type CreateSessionRequest struct {
 	Tags         []string `json:"tags,omitempty"`
 }
 
+// CreateSessionResponse contains the created session metadata.
 type CreateSessionResponse struct {
 	types.Session
 }
 
+// Create launches a new session.
 func (s *Service) Create(ctx context.Context, req CreateSessionRequest) (*CreateSessionResponse, error) {
 	if err := s.validateStruct(&req); err != nil {
 		return nil, err

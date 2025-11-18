@@ -7,11 +7,13 @@ import (
 	"github.com/gassara-kys/go-devin/internal/httpclient"
 )
 
+// Service exposes the sessions-related API endpoints.
 type Service struct {
 	transport httpclient.Transport
 	validate  func(any) error
 }
 
+// NewService builds a sessions Service instance.
 func NewService(t httpclient.Transport, validate func(any) error) *Service {
 	if t == nil {
 		panic("sessions: transport is required")

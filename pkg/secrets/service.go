@@ -7,11 +7,13 @@ import (
 	"github.com/gassara-kys/go-devin/internal/httpclient"
 )
 
+// Service wraps the secrets API endpoints.
 type Service struct {
 	transport httpclient.Transport
 	validator func(any) error
 }
 
+// NewService builds a secrets Service instance.
 func NewService(t httpclient.Transport, validate func(any) error) *Service {
 	if t == nil {
 		panic("secrets: transport is required")

@@ -1,6 +1,6 @@
 module github.com/gassara-kys/go-devin
 
-go 1.25.3
+go 1.24.5
 
 require (
 	github.com/gin-gonic/gin v1.10.0

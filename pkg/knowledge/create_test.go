@@ -26,7 +26,7 @@ func TestCreate(t *testing.T) {
 				Body: "content",
 			},
 			wantID: "note-1",
-			responder: func(r *http.Request) *http.Response {
+			responder: func(*http.Request) *http.Response {
 				return &http.Response{
 					StatusCode: http.StatusOK,
 					Body:       io.NopCloser(strings.NewReader(`{"id":"note-1","name":"Example","body":"content"}`)),

@@ -9,10 +9,12 @@ import (
 	"github.com/gassara-kys/go-devin/pkg/types"
 )
 
+// GetResponse contains a single playbook record.
 type GetResponse struct {
 	types.Playbook
 }
 
+// Get retrieves a playbook by ID.
 func (s *Service) Get(ctx context.Context, playbookID string) (*GetResponse, error) {
 	if playbookID == "" {
 		return nil, fmt.Errorf("playbookID is required")

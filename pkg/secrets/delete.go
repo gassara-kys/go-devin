@@ -7,6 +7,7 @@ import (
 	"net/url"
 )
 
+// Delete removes a secret by ID.
 func (s *Service) Delete(ctx context.Context, secretID string) error {
 	if secretID == "" {
 		return fmt.Errorf("secretID is required")

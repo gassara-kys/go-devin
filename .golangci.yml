@@ -1,10 +1,22 @@
+# https://golangci-lint.run/docs/configuration/file/
+version: "2"
 run:
+  go: "1.24"
   timeout: 3m
-issues:
-  exclude-use-default: false
+formatters:
+  enable:
+    - gofmt
 linters:
   enable:
     - govet
-    - gofmt
     - revive
     - gosec
+  settings:
+    revive:
+      # https://golangci-lint.run/docs/linters/configuration/#revive
+      rules:
+        # https://github.com/mgechev/revive/blob/HEAD/RULES_DESCRIPTIONS.md#package-comments
+        - name: package-comments
+          severity: warning
+          disabled: true
+          exclude: [""]

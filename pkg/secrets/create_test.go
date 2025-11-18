@@ -44,7 +44,7 @@ func TestCreate(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			svc := NewService(testutil.NewExecutor(t, tt.responder), func(v any) error { return nil })
+			svc := NewService(testutil.NewExecutor(t, tt.responder), func(any) error { return nil })
 			got, err := svc.Create(context.Background(), tt.request)
 			if err != nil {
 				t.Fatalf("Create error: %v", err)

@@ -2,6 +2,7 @@ package types
 
 import "encoding/json"
 
+// Session represents a high-level Devin session record.
 type Session struct {
 	SessionID        string          `json:"session_id"`
 	Status           string          `json:"status"`
@@ -16,10 +17,12 @@ type Session struct {
 	Tags             []string        `json:"tags,omitempty"`
 }
 
+// PullRequest mirrors the metadata returned for linked pull requests.
 type PullRequest struct {
 	URL string `json:"url"`
 }
 
+// SessionMessage describes a single message inside a session transcript.
 type SessionMessage struct {
 	MessageID   string              `json:"message_id"`
 	Sender      string              `json:"sender"`
@@ -29,16 +32,19 @@ type SessionMessage struct {
 	Attachments []SessionAttachment `json:"attachments,omitempty"`
 }
 
+// SessionAttachment stores metadata for files attached to a message.
 type SessionAttachment struct {
 	AttachmentID string `json:"attachment_id"`
 	FileName     string `json:"file_name"`
 }
 
+// SessionDetail combines the base session info with optional messages.
 type SessionDetail struct {
 	Session
 	Messages []SessionMessage `json:"messages,omitempty"`
 }
 
+// Secret represents a stored credential in Devin.
 type Secret struct {
 	SecretID   string `json:"secret_id"`
 	SecretType string `json:"secret_type"`
@@ -46,6 +52,7 @@ type Secret struct {
 	CreatedAt  string `json:"created_at"`
 }
 
+// Knowledge represents an individual knowledge entry.
 type Knowledge struct {
 	ID                 string `json:"id"`
 	Name               string `json:"name"`
@@ -56,6 +63,7 @@ type Knowledge struct {
 	PinnedRepo         string `json:"pinned_repo,omitempty"`
 }
 
+// KnowledgeFolder captures hierarchy metadata for knowledge entries.
 type KnowledgeFolder struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
@@ -63,6 +71,7 @@ type KnowledgeFolder struct {
 	CreatedAt   string `json:"created_at"`
 }
 
+// Playbook models the automation scripts exposed by Devin.
 type Playbook struct {
 	PlaybookID        string `json:"playbook_id"`
 	Title             string `json:"title"`

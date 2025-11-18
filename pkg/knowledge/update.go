@@ -9,6 +9,7 @@ import (
 	"github.com/gassara-kys/go-devin/pkg/types"
 )
 
+// UpdateRequest represents the payload for modifying a knowledge entry.
 type UpdateRequest struct {
 	Name               *string `json:"name,omitempty"`
 	Body               *string `json:"body,omitempty"`
@@ -17,10 +18,12 @@ type UpdateRequest struct {
 	PinnedRepo         *string `json:"pinned_repo,omitempty"`
 }
 
+// UpdateResponse contains the updated knowledge record.
 type UpdateResponse struct {
 	types.Knowledge
 }
 
+// Update modifies fields on an existing knowledge entry.
 func (s *Service) Update(ctx context.Context, noteID string, req UpdateRequest) (*UpdateResponse, error) {
 	if noteID == "" {
 		return nil, fmt.Errorf("noteID is required")

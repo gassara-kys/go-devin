@@ -25,7 +25,7 @@ func TestClientSessionsList(t *testing.T) {
 	}{
 		{
 			name: "success",
-			responder: func(r *http.Request) *http.Response {
+			responder: func(*http.Request) *http.Response {
 				payload := map[string]any{
 					"sessions": []map[string]any{
 						{

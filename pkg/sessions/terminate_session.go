@@ -7,10 +7,12 @@ import (
 	"net/url"
 )
 
+// TerminateSessionResponse contains the confirmation returned after termination.
 type TerminateSessionResponse struct {
 	Detail string `json:"detail"`
 }
 
+// Terminate stops a running session.
 func (s *Service) Terminate(ctx context.Context, sessionID string) (*TerminateSessionResponse, error) {
 	if sessionID == "" {
 		return nil, fmt.Errorf("sessionID is required")

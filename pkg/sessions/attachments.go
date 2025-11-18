@@ -13,15 +13,18 @@ import (
 	"strings"
 )
 
+// UploadAttachmentRequest holds the file metadata for uploading attachments.
 type UploadAttachmentRequest struct {
 	FileName string    `binding:"required"`
 	Reader   io.Reader `binding:"required"`
 }
 
+// UploadAttachmentResponse contains the identifier assigned to the uploaded attachment.
 type UploadAttachmentResponse struct {
 	AttachmentID string `json:"attachment_id"`
 }
 
+// UploadAttachment stores a new attachment and returns its identifier.
 func (s *Service) UploadAttachment(ctx context.Context, req UploadAttachmentRequest) (*UploadAttachmentResponse, error) {
 	if err := s.validateStruct(&req); err != nil {
 		return nil, err
@@ -49,17 +52,20 @@ func (s *Service) UploadAttachment(ctx context.Context, req UploadAttachmentRequ
 	return &UploadAttachmentResponse{AttachmentID: strings.TrimSpace(string(respBody))}, nil
 }
 
+// DownloadAttachmentRequest identifies the attachment to download.
 type DownloadAttachmentRequest struct {
 	AttachmentID string `binding:"required"`
 	FileName     string `binding:"required"`
 }
 
+// DownloadAttachmentResponse contains the attachment payload returned by Devin.
 type DownloadAttachmentResponse struct {
 	AttachmentID string
 	FileName     string
 	Content      []byte
 }
 
+// DownloadAttachment fetches an attachment's contents.
 func (s *Service) DownloadAttachment(ctx context.Context, req DownloadAttachmentRequest) (*DownloadAttachmentResponse, error) {
 	if err := s.validateStruct(&req); err != nil {
 		return nil, err
