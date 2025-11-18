@@ -36,5 +36,5 @@ func main() {
 		log.Fatalf("create secret: %v", err)
 	}
 
-	fmt.Printf("secret created: %s\n", resp.ID)
+	fmt.Printf("%+v\n", *resp)
 }

@@ -28,7 +28,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("list playbooks: %v", err)
 	}
-	for _, pb := range resp.Playbooks {
-		fmt.Printf("%s (%s)\n", pb.PlaybookID, pb.Title)
-	}
+	fmt.Printf("%+v\n", *resp)
 }

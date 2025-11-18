@@ -34,5 +34,5 @@ func main() {
 		log.Fatalf("create session: %v", err)
 	}
 
-	fmt.Printf("session created: %s (status=%s)\n", resp.SessionID, resp.Status)
+	fmt.Printf("%+v\n", *resp)
 }

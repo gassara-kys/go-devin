@@ -147,19 +147,37 @@ func (e *Executor) newRequest(ctx context.Context, method, p string, query url.V
 }
 
 func (e *Executor) resolveURL(p string, query url.Values) (string, error) {
+	if parsed, err := url.Parse(p); err == nil && parsed.IsAbs() {
+		if query != nil {
+			parsed.RawQuery = query.Encode()
+		}
+		return parsed.String(), nil
+	}
+
 	base, err := url.Parse(e.cfg.BaseURL)
 	if err != nil {
 		return "", fmt.Errorf("parse base url: %w", err)
 	}
 
-	if !strings.HasPrefix(p, "/") {
-		p = "/" + p
+	trimmedBasePath := strings.TrimSuffix(base.Path, "/")
+	relPath := strings.TrimPrefix(p, "/")
+
+	switch {
+	case trimmedBasePath == "" && relPath == "":
+		base.Path = "/"
+	case trimmedBasePath == "":
+		base.Path = "/" + relPath
+	case relPath == "":
+		base.Path = trimmedBasePath
+	default:
+		base.Path = trimmedBasePath + "/" + relPath
 	}
-	rel := &url.URL{Path: p}
 	if query != nil {
-		rel.RawQuery = query.Encode()
+		base.RawQuery = query.Encode()
+	} else {
+		base.RawQuery = ""
 	}
-	return base.ResolveReference(rel).String(), nil
+	return base.String(), nil
 }
 
 func (e *Executor) doWithRetry(ctx context.Context, builder requestBuilder) (*http.Response, error) {

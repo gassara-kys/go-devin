@@ -30,7 +30,5 @@ func main() {
 		log.Fatalf("list sessions: %v", err)
 	}
 
-	for _, s := range resp.Sessions {
-		fmt.Printf("[%s] %s (%s)\n", s.Status, s.SessionID, s.Title)
-	}
+	fmt.Printf("%+v\n", *resp)
 }

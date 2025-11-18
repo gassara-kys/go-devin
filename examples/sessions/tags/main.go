@@ -34,5 +34,5 @@ func main() {
 		log.Fatalf("update tags: %v", err)
 	}
 
-	fmt.Println(resp.Detail)
+	fmt.Printf("%+v\n", *resp)
 }

@@ -34,5 +34,5 @@ func main() {
 		log.Fatalf("send message: %v", err)
 	}
 
-	fmt.Printf("message queued: %s (%s)\n", resp.MessageID, resp.Status)
+	fmt.Printf("%+v\n", *resp)
 }

@@ -29,7 +29,5 @@ func main() {
 		log.Fatalf("list secrets: %v", err)
 	}
 
-	for _, sec := range resp.Secrets {
-		fmt.Printf("%s (%s)\n", sec.SecretID, sec.SecretName)
-	}
+	fmt.Printf("%+v\n", *resp)
 }

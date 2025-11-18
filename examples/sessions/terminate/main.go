@@ -30,5 +30,5 @@ func main() {
 		log.Fatalf("terminate session: %v", err)
 	}
 
-	fmt.Println(resp.Detail)
+	fmt.Printf("%+v\n", *resp)
 }

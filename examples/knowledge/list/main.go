@@ -28,7 +28,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("list knowledge: %v", err)
 	}
-	for _, note := range resp.Knowledge {
-		fmt.Printf("%s - %s\n", note.ID, note.Name)
-	}
+	fmt.Printf("%+v\n", *resp)
 }
