@@ -25,6 +25,12 @@ api-session:
 api-session-create:
 	@DEVIN_API_KEY=$(DEVIN_API_KEY) go run ./examples/sessions/create
 
+.PHONY: api-session-send-message
+api-session-send-message:
+	@DEVIN_API_KEY=$(DEVIN_API_KEY) \
+	DEVIN_SESSION_ID=$(DEVIN_SESSION_ID) \
+	go run ./examples/sessions/send_message
+
 .PHONY: api-secret
 api-secret:
 	@DEVIN_API_KEY=$(DEVIN_API_KEY) go run ./examples/secrets/list

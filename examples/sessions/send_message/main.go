@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -27,16 +27,11 @@ func main() {
 	defer cancel()
 
 	req := sessions.SendMessageRequest{
-		Message: "Please describe your current progress.",
+		Message: "SLEEP",
 	}
-	resp, err := client.Sessions.SendMessage(ctx, sessionID, req)
-	if err != nil {
+	if err := client.Sessions.SendMessage(ctx, sessionID, req); err != nil {
 		log.Fatalf("send message: %v", err)
 	}
 
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("", "  ")
-	if err := enc.Encode(resp); err != nil {
-		log.Fatalf("encode json: %v", err)
-	}
+	fmt.Println("Message sent successfully.")
 }
