@@ -29,7 +29,7 @@ func (s *Service) SendMessage(ctx context.Context, sessionID string, req SendMes
 		return nil, err
 	}
 	var resp SendMessageResponse
-	path := fmt.Sprintf("/sessions/%s/messages", url.PathEscape(sessionID))
+	path := fmt.Sprintf("/sessions/%s/message", url.PathEscape(sessionID))
 	if err := s.doJSON(ctx, http.MethodPost, path, nil, req, &resp); err != nil {
 		return nil, err
 	}
