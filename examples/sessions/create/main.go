@@ -26,8 +26,8 @@ func main() {
 	defer cancel()
 
 	req := sessions.CreateSessionRequest{
-		Prompt: "Summarize repository README",
-		Tags:   []string{"example"},
+		Prompt: "Hello, How are you, devin?",
+		Tags:   []string{"test"},
 	}
 	resp, err := client.Sessions.Create(ctx, req)
 	if err != nil {

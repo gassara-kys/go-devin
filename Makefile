@@ -21,6 +21,10 @@ build:
 api-session:
 	@DEVIN_API_KEY=$(DEVIN_API_KEY) go run ./examples/sessions/list
 
+.PHONY: api-session-create
+api-session-create:
+	@DEVIN_API_KEY=$(DEVIN_API_KEY) go run ./examples/sessions/create
+
 .PHONY: api-secret
 api-secret:
 	@DEVIN_API_KEY=$(DEVIN_API_KEY) go run ./examples/secrets/list
