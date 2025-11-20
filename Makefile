@@ -17,8 +17,8 @@ build:
 ########################################################
 ## API Test
 ########################################################
-.PHONY: api-session
-api-session:
+.PHONY: api-session-list
+api-session-list:
 	@DEVIN_API_KEY=$(DEVIN_API_KEY) go run ./examples/sessions/list
 
 .PHONY: api-session-create

@@ -13,6 +13,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/cenkalti/backoff/v5"
 )
 
 // Doer represents the minimal interface required from *http.Client.
@@ -181,44 +183,41 @@ func (e *Executor) resolveURL(p string, query url.Values) (string, error) {
 }
 
 func (e *Executor) doWithRetry(ctx context.Context, builder requestBuilder) (*http.Response, error) {
-	wait := e.cfg.Retry.InitialBackoff
-	if wait <= 0 {
-		wait = 200 * time.Millisecond
+	initialInterval := e.cfg.Retry.InitialBackoff
+	if initialInterval <= 0 {
+		initialInterval = 200 * time.Millisecond
 	}
-	maxWait := e.cfg.Retry.MaxBackoff
-	if maxWait <= 0 {
-		maxWait = time.Second
-	}
-	if maxWait < wait {
-		maxWait = wait
-	}
-	attempts := e.cfg.Retry.MaxAttempts
-	if attempts < 1 {
-		attempts = 1
+	maxInterval := e.cfg.Retry.MaxBackoff
+	if maxInterval <= 0 {
+		maxInterval = time.Second
 	}
 
-	var lastErr error
-	for attempt := 1; attempt <= attempts; attempt++ {
+	maxAttempts := e.cfg.Retry.MaxAttempts
+	if maxAttempts < 1 {
+		maxAttempts = 1
+	}
+
+	b := backoff.NewExponentialBackOff()
+	b.InitialInterval = initialInterval
+	b.MaxInterval = maxInterval
+	b.Multiplier = 2.0
+
+	operation := func() (*http.Response, error) {
 		req, err := builder()
 		if err != nil {
-			return nil, err
+			return nil, backoff.Permanent(err)
 		}
 
 		if e.cfg.Logger != nil {
-			e.cfg.Logger.DebugContext(ctx, "devin api request", "method", req.Method, "url", req.URL.String(), "attempt", attempt)
+			e.cfg.Logger.DebugContext(ctx, "devin api request", "method", req.Method, "url", req.URL.String())
 		}
 
 		resp, err := e.cfg.HTTPClient.Do(req)
 		if err != nil {
-			lastErr = err
-			if attempt == attempts || !shouldRetryError(err) {
+			if shouldRetryError(err) {
 				return nil, err
 			}
-			if err := sleep(ctx, wait); err != nil {
-				return nil, err
-			}
-			wait = nextDuration(wait, maxWait)
-			continue
+			return nil, backoff.Permanent(err)
 		}
 
 		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
@@ -226,12 +225,9 @@ func (e *Executor) doWithRetry(ctx context.Context, builder requestBuilder) (*ht
 		}
 
 		body, readErr := io.ReadAll(resp.Body)
-		closeErr := resp.Body.Close()
+		_ = resp.Body.Close()
 		if readErr != nil {
-			return nil, readErr
-		}
-		if closeErr != nil {
-			return nil, closeErr
+			return nil, backoff.Permanent(readErr)
 		}
 
 		apiErr := &APIError{
@@ -239,29 +235,27 @@ func (e *Executor) doWithRetry(ctx context.Context, builder requestBuilder) (*ht
 			Body:       body,
 			Detail:     parseAPIDetail(body),
 		}
-		lastErr = apiErr
 
-		if attempt == attempts || !shouldRetryStatus(resp.StatusCode) {
+		if shouldRetryStatus(resp.StatusCode) {
 			return nil, apiErr
 		}
+		return nil, backoff.Permanent(apiErr)
+	}
 
-		if err := sleep(ctx, wait); err != nil {
-			return nil, err
+	notify := func(err error, d time.Duration) {
+		if e.cfg.Logger != nil {
+			e.cfg.Logger.DebugContext(ctx, "devin api retry", "error", err, "wait_duration", d)
 		}
-		wait = nextDuration(wait, maxWait)
 	}
-	return nil, lastErr
-}
 
-func sleep(ctx context.Context, d time.Duration) error {
-	timer := time.NewTimer(d)
-	defer timer.Stop()
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-	case <-timer.C:
-		return nil
+	opts := []backoff.RetryOption{
+		backoff.WithBackOff(b),
+		backoff.WithMaxElapsedTime(0), // Disable time limit
+		backoff.WithNotify(notify),
+		backoff.WithMaxTries(uint(maxAttempts)),
 	}
+
+	return backoff.Retry(ctx, operation, opts...)
 }
 
 var retryableStatusCodes = map[int]struct{}{
@@ -288,14 +282,6 @@ func shouldRetryError(err error) bool {
 	}
 	var netErr net.Error
 	return errors.As(err, &netErr)
-}
-
-func nextDuration(current, maxDuration time.Duration) time.Duration {
-	next := current * 2
-	if next > maxDuration {
-		return maxDuration
-	}
-	return next
 }
 
 // APIError represents an error returned by the Devin API.
