@@ -19,10 +19,10 @@ import (
 const (
 	defaultBaseURL       = "https://api.devin.ai/v1"
 	defaultUserAgent     = "go-devin/0.1.0"
-	defaultTimeout       = 30 * time.Second
-	defaultRetryAttempts = 3
-	defaultRetryInitial  = 500 * time.Millisecond
-	defaultRetryMaxWait  = 2 * time.Second
+	defaultTimeout       = 120 * time.Second
+	defaultRetryAttempts = 5
+	defaultRetryInitial  = 1 * time.Second
+	defaultRetryMaxWait  = 10 * time.Second
 )
 
 // HTTPDoer mirrors httpclient.Doer so callers can provide custom clients.
