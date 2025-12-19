@@ -52,10 +52,25 @@ func main() {
 }
 ```
 
+## セッション詳細
+
+`Sessions.Get` で取得する `SessionDetail.Messages` には、`event_id`/`message`/`timestamp`/`type`/`origin`/`user_id`/`username` が含まれます。
+
+```go
+detail, err := client.Sessions.Get(ctx, "devin-123")
+if err != nil {
+    panic(err)
+}
+for _, msg := range detail.Messages {
+    fmt.Printf("%s %s\n", msg.Timestamp, msg.Message)
+}
+```
+
 ## サンプル
 
 ```bash
 DEVIN_API_KEY=xxx go run ./examples/sessions/list
+DEVIN_API_KEY=xxx DEVIN_SESSION_ID=devin-123 go run ./examples/sessions/get
 DEVIN_API_KEY=xxx DEVIN_SESSION_ID=devin-123 go run ./examples/sessions/send_message
 ```
 

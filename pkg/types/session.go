@@ -24,12 +24,13 @@ type PullRequest struct {
 
 // SessionMessage describes a single message inside a session transcript.
 type SessionMessage struct {
-	MessageID   string              `json:"message_id"`
-	Sender      string              `json:"sender"`
-	Content     string              `json:"content"`
-	Status      string              `json:"status"`
-	CreatedAt   string              `json:"created_at"`
-	Attachments []SessionAttachment `json:"attachments,omitempty"`
+	EventID   string  `json:"event_id"`
+	Message   string  `json:"message"`
+	Timestamp string  `json:"timestamp"`
+	Type      string  `json:"type"`
+	Origin    *string `json:"origin,omitempty"`
+	UserID    *string `json:"user_id,omitempty"`
+	Username  *string `json:"username,omitempty"`
 }
 
 // SessionAttachment stores metadata for files attached to a message.

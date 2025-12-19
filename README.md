@@ -53,12 +53,27 @@ func main() {
 }
 ```
 
+## Session Details
+
+`SessionDetail.Messages` is populated by `Sessions.Get` and includes the transcript metadata (`event_id`, `message`, `timestamp`, `type`, `origin`, `user_id`, `username`).
+
+```go
+detail, err := client.Sessions.Get(ctx, "devin-123")
+if err != nil {
+    panic(err)
+}
+for _, msg := range detail.Messages {
+    fmt.Printf("%s %s\n", msg.Timestamp, msg.Message)
+}
+```
+
 ## Examples
 
 Each endpoint has an executable sample. For instance:
 
 ```bash
 DEVIN_API_KEY=xxx go run ./examples/sessions/list
+DEVIN_API_KEY=xxx DEVIN_SESSION_ID=devin-123 go run ./examples/sessions/get
 DEVIN_API_KEY=xxx DEVIN_SESSION_ID=devin-123 go run ./examples/sessions/send_message
 ```
 
