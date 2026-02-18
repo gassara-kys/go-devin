@@ -34,3 +34,6 @@ go.work.sum
 # Local build cache (created during tests)
 .gocache
 .golangci-lint-cache
+
+# macOS
+.DS_Store
